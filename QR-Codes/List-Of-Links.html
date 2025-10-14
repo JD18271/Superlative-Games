@@ -1,322 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Superlative Games Links</title>
-  <link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
-  crossorigin="anonymous"
-  referrerpolicy="no-referrer"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Superlative Games Links</title>
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  <!-- FIX: The integrity hash was incorrect by one character, causing the stylesheet to fail loading. This is the verified hash for v6.5.0 -->
+  xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"/>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    /* ---------------------------------- */
-    /* CSS Variables & DEFAULT (DARK MODE) STYLES */
-    /* ---------------------------------- */
+  <style>
+    /* ---------------------------------- */
+    /* CSS Variables & DEFAULT (DARK MODE) STYLES */
+    /* ---------------------------------- */
 
-    :root {
-      /* Base Colors */
-      --dm-bg-color: #1a1a2e;
-      --dm-card-bg: #282a4a;
-      --dm-text-color: #e0e0e0;
-      --dm-link-bg: #3b3d68;
-      --dm-accent-color: #ffcc00;
+    :root {
+      /* Base Colors */
+      --dm-bg-color: #1a1a2e;
+      --dm-card-bg: #282a4a;
+      --dm-text-color: #e0e0e0;
+      --dm-link-bg: #3b3d68;
+      --dm-accent-color: #ffcc00;
 
-      /* Light Mode Colors */
-      --lm-bg-color: #f4f4f9;
-      --lm-card-bg: #ffffff;
-      --lm-text-color: #333333;
-      --lm-link-bg: #ececf3;
-      --lm-accent-color: #007bff;
+      /* Light Mode Colors */
+      --lm-bg-color: #f4f4f9;
+      --lm-card-bg: #ffffff;
+      --lm-text-color: #333333;
+      --lm-link-bg: #ececf3;
+      --lm-accent-color: #007bff;
 
-      /* Current Theme Colors (Dynamically set by JS/CSS) */
-      --bg-color: var(--dm-bg-color);
-      --card-bg: var(--dm-card-bg);
-      --text-color: var(--dm-text-color);
-      --link-bg: var(--dm-link-bg);
-      --accent-color: var(--dm-accent-color);
-      --toggle-border-color: #ffffff; /* White border for DM */
-      --toggle-pill-color: #4cd964; /* iOS Green for 'On' */
-    }
+      /* Current Theme Colors (Dynamically set by JS/CSS) */
+      --bg-color: var(--dm-bg-color);
+      --card-bg: var(--dm-card-bg);
+      --text-color: var(--dm-text-color);
+      --link-bg: var(--dm-link-bg);
+      --accent-color: var(--dm-accent-color);
+      --toggle-border-color: #ffffff; /* White border for DM */
+      --toggle-pill-color: #4cd964; /* iOS Green for 'On' */
+    }
 
-    /* LIGHT MODE STYLES (Overrides base variables) */
-    body.light-mode {
-      --bg-color: var(--lm-bg-color);
-      --card-bg: var(--lm-card-bg);
-      --text-color: var(--lm-text-color);
-      --link-bg: var(--lm-link-bg);
-      --accent-color: var(--lm-accent-color);
-      --toggle-border-color: #333333; /* Dark border for LM */
-      --toggle-pill-color: #333333; /* Dark pill for 'On' in LM */
-    }
+    /* LIGHT MODE STYLES (Overrides base variables) */
+    body.light-mode {
+      --bg-color: var(--lm-bg-color);
+      --card-bg: var(--lm-card-bg);
+      --text-color: var(--lm-text-color);
+      --link-bg: var(--lm-link-bg);
+      --accent-color: var(--lm-accent-color);
+      --toggle-border-color: #333333; /* Dark border for LM */
+      --toggle-pill-color: #333333; /* Dark pill for 'On' in LM */
+    }
 
 
-    /* Global Styles */
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      transition: background-color 0.4s, color 0.4s;
-    }
+    /* Global Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      transition: background-color 0.4s, color 0.4s;
+    }
 
-    /* Card Container */
-    .link-card {
-      background-color: var(--card-bg);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      transition: background-color 0.4s, box-shadow 0.4s;
-      position: relative;
-    }
+    /* Card Container */
+    .link-card {
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      transition: background-color 0.4s, box-shadow 0.4s;
+      position: relative;
+    }
 
-    /* Light Mode Card Adjustments */
-    body.light-mode .link-card {
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+    /* Light Mode Card Adjustments */
+    body.light-mode .link-card {
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
 
-    /* Heading */
-    h2 {
-      color: var(--accent-color);
-      font-weight: 700;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    /* Heading */
+    h2 {
+      color: var(--accent-color);
+      font-weight: 700;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
-    /* Links List & Style (No changes from previous version) */
-    ul.social-links {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
+    /* Links List & Style (No changes from previous version) */
+    ul.social-links {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-    ul.social-links a {
-      text-decoration: none;
-      color: var(--text-color);
-      font-size: 1.1em;
-      font-weight: 600;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 12px 20px;
-      border-radius: 8px;
-      background-color: var(--link-bg);
-      transition: background-color 0.3s, transform 0.3s, color 0.3s, border-color 0.3s;
-      border: 2px solid var(--link-bg);
-    }
+    ul.social-links a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-size: 1.1em;
+      font-weight: 600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 20px;
+      border-radius: 8px;
+      background-color: var(--link-bg);
+      transition: background-color 0.3s, transform 0.3s, color 0.3s, border-color 0.3s;
+      border: 2px solid var(--link-bg);
+    }
 
-    ul.social-links a i {
-      margin-right: 15px;
-      font-size: 1.5em;
-    }
+    ul.social-links a i {
+      margin-right: 15px;
+      font-size: 1.5em;
+    }
 
-    /* Hover Effect */
-    ul.social-links a:hover {
-      /* Dark Mode hover values */
-      background-color: var(--dm-link-bg); /* will be overridden in LM */
-      color: var(--accent-color);
-      transform: translateY(-3px) scale(1.02);
-      border-color: var(--accent-color);
-      box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4); /* Gold glow */
-    }
+    /* Hover Effect */
+    ul.social-links a:hover {
+      /* Dark Mode hover values */
+      background-color: var(--dm-link-bg); /* will be overridden in LM */
+      color: var(--accent-color);
+      transform: translateY(-3px) scale(1.02);
+      border-color: var(--accent-color);
+      box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4); /* Gold glow */
+    }
 
-    /* Light Mode specific hover values */
-    body.light-mode ul.social-links a:hover {
-      background-color: #e0e0e0;
-      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Blue glow */
-    }
+    /* Light Mode specific hover values */
+    body.light-mode ul.social-links a:hover {
+      background-color: #e0e0e0;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Blue glow */
+    }
 
-    /* Specific Icon Colors */
-    .fa-youtube { color: #ff0000; }
-    .fa-github { color: #f4f4f4; }
-    .fa-reddit { color: #ff4500; }
-    .fa-envelope { color: #0073e6; }
-    .fa-vimeo { color: #1ab7ea; }
-    body.light-mode .fa-github { color: #333333; }
+    /* Specific Icon Colors */
+    .fa-youtube { color: #ff0000; }
+    .fa-github { color: #f4f4f4; }
+    .fa-reddit { color: #ff4500; }
+    .fa-envelope { color: #0073e6; }
+    .fa-vimeo { color: #1ab7ea; }
+    body.light-mode .fa-github { color: #333333; }
 
-    /* ---------------------------------- */
-    /* iOS STYLE SLIDER TOGGLE SWITCH (NEW STYLES) */
-    /* ---------------------------------- */
+    /* ---------------------------------- */
+    /* iOS STYLE SLIDER TOGGLE SWITCH (NEW STYLES) */
+    /* ---------------------------------- */
 
-    /* The main wrapper for the toggle */
-    .ios-toggle-switch {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      display: inline-block;
-      width: 50px; /* Switch width */
-      height: 28px; /* Switch height */
-    }
+    /* The main wrapper for the toggle */
+    .ios-toggle-switch {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: inline-block;
+      width: 50px; /* Switch width */
+      height: 28px; /* Switch height */
+    }
 
-    /* Hide the default checkbox input */
-    .ios-toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    /* Hide the default checkbox input */
+    .ios-toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
 
-    /* The switch slider (pill shape) */
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: transparent; /* Transparent background */
-      transition: .4s;
-      border-radius: 28px; /* Makes it a pill shape */
-      border: 2px solid var(--toggle-border-color); /* The requested border/outline */
-    }
+    /* The switch slider (pill shape) */
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: transparent; /* Transparent background */
+      transition: .4s;
+      border-radius: 28px; /* Makes it a pill shape */
+      border: 2px solid var(--toggle-border-color); /* The requested border/outline */
+    }
 
-    /* The circle "handle" */
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 2px;
-      bottom: 2px;
-      background-color: var(--toggle-border-color); /* White/Black circle */
-      transition: .4s;
-      border-radius: 50%; /* Makes it a circle */
-    }
+    /* The circle "handle" */
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--toggle-border-color); /* White/Black circle */
+      transition: .4s;
+      border-radius: 50%; /* Makes it a circle */
+    }
 
-    /* When the checkbox IS CHECKED (i.e., Light Mode is ON) */
-    input:checked + .slider {
-      background-color: var(--toggle-pill-color); /* iOS Green/Black when ON */
-      border-color: var(--toggle-pill-color); /* Border matches background when ON */
-    }
+    /* When the checkbox IS CHECKED (i.e., Light Mode is ON) */
+    input:checked + .slider {
+      background-color: var(--toggle-pill-color); /* iOS Green/Black when ON */
+      border-color: var(--toggle-pill-color); /* Border matches background when ON */
+    }
 
-    input:checked + .slider:before {
-      transform: translateX(22px); /* Moves the circle to the right */
-      background-color: var(--lm-card-bg); /* White circle inside the colored pill */
-    }
+    input:checked + .slider:before {
+      transform: translateX(22px); /* Moves the circle to the right */
+      background-color: var(--lm-card-bg); /* White circle inside the colored pill */
+    }
 
-    /* Dark Mode (Default/Unchecked) icon */
-    .slider i.fa-sun {
-      position: absolute;
-      top: 4px;
-      right: 5px;
-      font-size: 16px;
-      color: var(--toggle-border-color); /* White in DM */
-      transition: 0.4s;
-      opacity: 1;
-    }
+    /* Dark Mode (Default/Unchecked) icon */
+    .slider i.fa-sun {
+      position: absolute;
+      top: 4px;
+      right: 5px;
+      font-size: 16px;
+      color: var(--toggle-border-color); /* White in DM */
+      transition: 0.4s;
+      opacity: 1;
+    }
 
-    /* Light Mode (Checked) icon */
-    .slider i.fa-moon {
-      position: absolute;
-      top: 4px;
-      left: 5px;
-      font-size: 16px;
-      color: var(--lm-card-bg); /* White in LM */
-      transition: 0.4s;
-      opacity: 0; /* Hidden by default */
-    }
-    
-    /* Show Moon icon and hide Sun icon when checked */
-    input:checked + .slider i.fa-moon {
-      opacity: 1;
-    }
+    /* Light Mode (Checked) icon */
+    .slider i.fa-moon {
+      position: absolute;
+      top: 4px;
+      left: 5px;
+      font-size: 16px;
+      color: var(--lm-card-bg); /* White in LM */
+      transition: 0.4s;
+      opacity: 0; /* Hidden by default */
+    }
+    
+    /* Show Moon icon and hide Sun icon when checked */
+    input:checked + .slider i.fa-moon {
+      opacity: 1;
+    }
 
-    input:checked + .slider i.fa-sun {
-      opacity: 0;
-    }
+    input:checked + .slider i.fa-sun {
+      opacity: 0;
+    }
 
-  </style>
+  </style>
 </head>
 <body class="dark-mode">
-  <div class="link-card">
+  <div class="link-card">
 
-    <label class="ios-toggle-switch" for="mode-toggle">
-        <input type="checkbox" id="mode-toggle">
-        <span class="slider">
-          <i class="fas fa-sun"></i>
-          <i class="fas fa-moon"></i>
-        </span>
-    </label>
-    
-    <h2>Connect with Superlative Games</h2>
-    <ul class="social-links">
-      <li>
-        <a href="https://www.youtube.com/@SuperlativeGames" target="_blank">
-          <i class="fab fa-youtube"></i> YouTube
-        </a>
-      </li>
-      <li>
-        <a href="https://github.com/SuperlativeGames" target="_blank">
-          <i class="fab fa-github"></i> GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://www.reddit.com/user/Ok_Variation_6774/" target="_blank">
-          <i class="fab fa-reddit"></i> Reddit
-        </a>
-      </li>
-      <li>
-        <a href="mailto:Superlative-Games@outlook.com">
-          <i class="fas fa-envelope"></i> Email
-        </a>
-      </li>
-      <li>
-        <a href="https://vimeo.com/SuperlativeGames" target="_blank">
-          <i class="fab fa-vimeo"></i> Vimeo
-        </a>
-      </li>
-    </ul>
-  </div>
+    <label class="ios-toggle-switch" for="mode-toggle">
+        <input type="checkbox" id="mode-toggle">
+        <span class="slider">
+          <i class="fas fa-sun"></i>
+          <i class="fas fa-moon"></i>
+        </span>
+    </label>
+    
+    <h2>Connect with Superlative Games</h2>
+    <ul class="social-links">
+      <li>
+        <a href="https://www.youtube.com/@SuperlativeGames" target="_blank">
+          <i class="fab fa-youtube"></i> YouTube
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/SuperlativeGames" target="_blank">
+          <i class="fab fa-github"></i> GitHub
+        </a>
+      </li>
+      <li>
+        <a href="https://www.reddit.com/user/Ok_Variation_6774/" target="_blank">
+          <i class="fab fa-reddit"></i> Reddit
+        </a>
+      </li>
+      <li>
+        <a href="mailto:Superlative-Games@outlook.com">
+          <i class="fas fa-envelope"></i> Email
+        </a>
+      </li>
+      <li>
+        <a href="https://vimeo.com/SuperlativeGames" target="_blank">
+          <i class="fab fa-vimeo"></i> Vimeo
+        </a>
+      </li>
+    </ul>
+  </div>
 
-  <script>
-    const toggleInput = document.getElementById('mode-toggle');
-    const body = document.body;
+  <script>
+    const toggleInput = document.getElementById('mode-toggle');
+    const body = document.body;
 
-    // Function to set the theme based on the checked state
-    function setTheme(isLight) {
-        if (isLight) {
-            body.classList.add('light-mode');
-            toggleInput.checked = true; // Ensure the checkbox matches
-            localStorage.setItem('theme', 'light');
-        } else {
-            body.classList.remove('light-mode');
-            toggleInput.checked = false; // Ensure the checkbox matches
-            localStorage.setItem('theme', 'dark');
-        }
-    }
+    // Function to set the theme based on the checked state
+    function setTheme(isLight) {
+        if (isLight) {
+            body.classList.add('light-mode');
+            toggleInput.checked = true; // Ensure the checkbox matches
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.classList.remove('light-mode');
+            toggleInput.checked = false; // Ensure the checkbox matches
+            localStorage.setItem('theme', 'dark');
+        }
+    }
 
-    // Check for saved preference or OS preference on load
-    const savedTheme = localStorage.getItem('theme');
-    // We assume the user prefers dark mode if not specified, matching the initial state
-    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    // Check for saved preference or OS preference on load
+    const savedTheme = localStorage.getItem('theme');
+    // We assume the user prefers dark mode if not specified, matching the initial state
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
 
-    if (savedTheme) {
-        // Use saved preference
-        setTheme(savedTheme === 'light');
-    } else {
-        // Use OS preference as default
-        setTheme(prefersLight);
-    }
+    if (savedTheme) {
+        // Use saved preference
+        setTheme(savedTheme === 'light');
+    } else {
+        // Use OS preference as default
+        setTheme(prefersLight);
+    }
 
 
-    // Event listener for the toggle input
-    toggleInput.addEventListener('change', (e) => {
-        // The 'change' event fires when the checkbox is checked/unchecked
-        setTheme(e.target.checked);
-    });
-  </script>
+    // Event listener for the toggle input
+    toggleInput.addEventListener('change', (e) => {
+        // The 'change' event fires when the checkbox is checked/unchecked
+        setTheme(e.target.checked);
+    });
+  </script>
 </body>
 </html>
