@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Superlative Games Links</title>
+    <!-- Load Tailwind CSS (although the app uses custom CSS, the environment requires this meta tag) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN for icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          xintegrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwTkw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+    />
+    <!-- Poppins Font Link -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ---------------------------------- */
+        /* CSS Variables & DEFAULT (DARK MODE) STYLES */
+        /* ---------------------------------- */
+        :root {
+            /* Base Colors */
+            --dm-bg-color: #1a1a2e;
+            --dm-card-bg: #282a4a;
+            --dm-text-color: #e0e0e0;
+            --dm-link-bg: #3b3d68;
+            --dm-accent-color: #ffcc00;
+            /* Light Mode Colors */
+            --lm-bg-color: #f4f4f9;
+            --lm-card-bg: #ffffff;
+            --lm-text-color: #333333;
+            --lm-link-bg: #ececf3;
+            --lm-accent-color: #007bff;
+            /* Current Theme Colors (Dynamically set by JS/CSS) */
+            --bg-color: var(--dm-bg-color);
+            --card-bg: var(--dm-card-bg);
+            --text-color: var(--dm-text-color);
+            --link-bg: var(--dm-link-bg);
+            --accent-color: var(--dm-accent-color);
+            --toggle-border-color: #ffffff; /* White border for DM */
+            --toggle-pill-color: #4cd964; /* iOS Green for 'On' */
+        }
+
+        /* LIGHT MODE STYLES (Overrides base variables) */
+        body.light-mode {
+            --bg-color: var(--lm-bg-color);
+            --card-bg: var(--lm-card-bg);
+            --text-color: var(--lm-text-color);
+            --link-bg: var(--lm-link-bg);
+            --accent-color: var(--lm-accent-color);
+            --toggle-border-color: #333333; /* Dark border for LM */
+            --toggle-pill-color: #333333; /* Dark pill for 'On' in LM */
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.4s, color 0.4s;
+            /* Fluid sizing for mobile responsiveness */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Card Container */
+        .link-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            /* Adjusted shadow to use variable for better DM/LM separation */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: background-color 0.4s, box-shadow 0.4s;
+            position: relative;
+        }
+
+        /* Light Mode Card Adjustments */
+        body.light-mode .link-card {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        h2 {
+            color: var(--accent-color);
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Links List */
+        ul.social-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        ul.social-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: var(--link-bg);
+            transition: background-color 0.3s, transform 0.3s, color 0.3s, border-color 0.3s;
+            border: 2px solid var(--link-bg);
+            /* Ensure the link targets are large enough for touch */
+            min-height: 48px;
+        }
+
+        ul.social-links a i {
+            margin-right: 15px;
+            font-size: 1.5em;
+        }
+
+        /* Hover Effect (applies to desktop/mouse) */
+        @media (hover: hover) {
+            ul.social-links a:hover {
+                color: var(--accent-color);
+                transform: translateY(-3px) scale(1.02);
+                border-color: var(--accent-color);
+                box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4); /* Dark Mode glow */
+            }
+
+            body.light-mode ul.social-links a:hover {
+                background-color: #e0e0e0;
+                box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2); /* Light Mode glow */
+            }
+        }
+
+        /* Specific Icon Colors */
+        .fa-youtube { color: #ff0000; }
+        .fa-github { color: #f4f4f4; }
+        .fa-reddit { color: #ff4500; }
+        .fa-envelope { color: #0073e6; }
+        .fa-vimeo { color: #1ab7ea; }
+        body.light-mode .fa-github { color: #333333; }
+
+        /* ---------------------------------- */
+        /* iOS STYLE SLIDER TOGGLE SWITCH */
+        /* ---------------------------------- */
+        .ios-toggle-switch {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+
+        .ios-toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: transparent;
+            transition: .4s;
+            border-radius: 28px;
+            border: 2px solid var(--toggle-border-color);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: var(--toggle-border-color);
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--toggle-pill-color);
+            border-color: var(--toggle-pill-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+            background-color: var(--lm-card-bg);
+        }
+
+        /* Dark Mode (Default/Unchecked) icon - Sun */
+        .slider i.fa-sun {
+            position: absolute;
+            top: 4px;
+            right: 5px;
+            font-size: 16px;
+            color: var(--toggle-border-color);
+            transition: 0.4s;
+            opacity: 1;
+        }
+
+        /* Light Mode (Checked) icon - Moon */
+        .slider i.fa-moon {
+            position: absolute;
+            top: 4px;
+            left: 5px;
+            font-size: 16px;
+            color: var(--lm-card-bg);
+            transition: 0.4s;
+            opacity: 0;
+        }
+
+        /* Show Moon icon and hide Sun icon when checked */
+        input:checked + .slider i.fa-moon {
+            opacity: 1;
+        }
+        input:checked + .slider i.fa-sun {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="link-card">
+        <!-- Theme Toggle Switch -->
+        <label class="ios-toggle-switch" for="mode-toggle">
+            <input type="checkbox" id="mode-toggle">
+            <span class="slider">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+            </span>
+        </label>
+        
+        <!-- Main Content -->
+        <h2>Connect with Superlative Games</h2>
+        <ul class="social-links">
+            <li>
+                <a href="https://www.youtube.com/@SuperlativeGames" target="_blank">
+                    <i class="fab fa-youtube"></i> YouTube
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/SuperlativeGames" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </li>
+            <li>
+                <a href="https://www.reddit.com/user/Ok_Variation_6774/" target="_blank">
+                    <i class="fab fa-reddit"></i> Reddit
+                </a>
+            </li>
+            <li>
+                <a href="mailto:Superlative-Games@outlook.com">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
+            </li>
+            <li>
+                <a href="https://vimeo.com/SuperlativeGames" target="_blank">
+                    <i class="fab fa-vimeo"></i> Vimeo
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // JS Logic for Dark/Light Mode Toggle
+        const toggleInput = document.getElementById('mode-toggle');
+        const body = document.body;
+
+        /**
+         * Sets the theme class on the body and saves the preference.
+         * @param {boolean} isLight - True for light mode, false for dark mode.
+         */
+        function setTheme(isLight) {
+            if (isLight) {
+                body.classList.add('light-mode');
+                toggleInput.checked = true;
+                // Use the opposite of the class name for the storage key (since absence of class means dark mode)
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                toggleInput.checked = false;
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Initialize theme on load
+        (function initTheme() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+
+                if (savedTheme) {
+                    // Use saved preference
+                    setTheme(savedTheme === 'light');
+                } else {
+                    // Use OS preference as default if no preference is saved
+                    setTheme(prefersLight);
+                }
+            } catch (error) {
+                // Log error if localStorage is inaccessible but continue without saving preference
+                console.error("Could not access localStorage for theme preference:", error);
+                // Fallback: set to dark mode if we can't determine preference
+                setTheme(false);
+            }
+        })();
+
+
+        // Event listener for the toggle input
+        toggleInput.addEventListener('change', (e) => {
+            setTheme(e.target.checked);
+        });
+    </script>
+</body>
+</html>
