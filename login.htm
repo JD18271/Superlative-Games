@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superlative Games Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
+        }
+        .card {
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+        }
+        .input-field {
+            background-color: #4a5568;
+            border: 1px solid #718096;
+            color: #ffffff;
+        }
+        .btn-primary {
+            background-color: #48bb78;
+            color: #1a202c;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background-color: #38a169;
+        }
+        .btn-primary:disabled {
+            background-color: #5a6475;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        /* Increased emoji size to text-6xl */
+        .puzzle-item {
+            cursor: pointer;
+            @apply p-4 bg-gray-600 rounded-lg text-6xl text-center transition duration-150; 
+            user-select: none;
+            border: none;
+            line-height: 1; 
+        }
+        .puzzle-item.selected {
+            @apply ring-4 ring-green-400 bg-gray-700;
+        }
+        .puzzle-item:hover {
+            @apply bg-gray-500;
+        }
+        /* Style for the prominent error box */
+        #auth-domain-error {
+            background-color: #4a1d1d; /* Dark Red Background */
+            border: 2px solid #ef4444; /* Red Border */
+        }
+        #fatal-config-error {
+            background-color: #4a1d1d;
+            border: 2px solid #ef4444;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- SECURITY CHECK FAILURE CONTAINER -->
+    <div id="security-error-container" class="hidden w-full max-w-lg card p-8 rounded-xl shadow-2xl text-center">
+        <h1 class="text-6xl mb-4" role="img" aria-label="Warning Sign">⚠️</h1>
+        <h2 class="text-3xl font-bold text-red-400 mb-4">Access Denied: Unauthorized Domain</h2>
+        <p class="text-gray-300 mb-6">
+            Sorry, this Superlative Games application is restricted and can only be run on specific, authorized domains, including:
+        </p>
+        <ul class="text-left mx-auto max-w-xs space-y-2 text-gray-200 mb-8">
+            <li class="p-2 bg-gray-600 rounded"><code>gemini.google.com</code> (Development/Canvas)</li>
+            <li class="p-2 bg-gray-600 rounded"><code>superlative-games.onrender.com</code> (Production)</li>
+        </ul>
+        <p class="text-sm text-red-300">
+            Current Hostname: <code id="current-hostname-display" class="font-mono bg-red-800 p-1 rounded">Loading...</code>
+        </p>
+    </div>
+
+    <div id="app-container" class="w-full max-w-md hidden">
+
+        <!-- User Status Display (Hidden during puzzle, shown after) -->
+        <div class="fixed top-4 right-4 text-sm p-3 rounded-lg shadow-xl hidden" id="user-status">
+            <p class="text-white">Status: <span class="font-semibold text-yellow-300" id="auth-status">Initializing...</span></p>
+            <p class="text-white">User ID: <span class="font-semibold text-gray-300" id="user-id">N/A</span></p>
+        </div>
+
+        <!-- Visual Puzzle Gate -->
+        <div id="puzzle-gate" class="card p-8 rounded-xl shadow-2xl transition duration-500 transform scale-100">
+            <h1 class="text-3xl font-bold text-white text-center mb-6">Access Superlative Games</h1>
+            <p class="text-gray-400 text-center mb-6">Prove you're not a bot by solving this visual challenge.</p>
+
+            <form id="puzzle-form">
+                <label id="puzzle-question" class="block text-gray-300 text-sm font-medium mb-4 text-center text-lg font-semibold">Select all Dairy products</label>
+                
+                <!-- Emoji Grid Container -->
+                <div id="emoji-grid" class="grid grid-cols-3 gap-3">
+                    <!-- Emojis will be injected here as buttons -->
+                </div>
+                
+                <div id="puzzle-message" class="text-sm mt-4 text-center h-4"></div>
+
+                <button type="submit" id="access-button" disabled
+                        class="btn-primary w-full mt-6 py-3 rounded-lg font-bold text-lg">
+                    Access Superlative Games
+                </button>
+            </form>
+        </div>
+
+        <!-- Firebase Login/Signup Form (Initially Hidden) -->
+        <div id="login-form-container" class="card p-8 rounded-xl shadow-2xl transition duration-500 transform scale-0 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0"
+             style="display: none;">
+            <h2 class="text-3xl font-bold text-white text-center mb-6">Sign In / Sign Up</h2>
+            
+            <!-- FATAL CONFIGURATION ERROR MESSAGE -->
+            <div id="fatal-config-error" class="p-4 rounded-lg mb-6 text-sm text-red-100 hidden">
+                <p class="font-bold mb-2">Authentication Error: Missing Configuration</p>
+                <p>The application could not initialize Firebase because the required configuration data is missing or invalid. Check the console for the full error.</p>
+                <p class="mt-2 font-mono text-xs">Error Code: CONFIG_INIT_FAILED</p>
+            </div>
+
+
+            <!-- Prominent Domain Error Box (Hidden by default) -->
+            <div id="auth-domain-error" class="p-4 rounded-lg mb-4 text-sm text-red-100 hidden">
+                <p class="font-bold mb-2">Social Sign-in Blocked (auth/unauthorized-domain)</p>
+                <p>To fix this, please add <code class="bg-red-700 p-1 rounded">gemini.google.com</code> to the **Authorized Domains** list in your Firebase Console (Authentication section).</p>
+            </div>
+            
+            <form id="auth-form" class="space-y-4">
+                <input type="email" id="auth-email" placeholder="Email Address"
+                       class="input-field w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                
+                <input type="password" id="auth-password" placeholder="Password (min 6 chars)"
+                       class="input-field w-full p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required minlength="6">
+                
+                <div id="auth-message" class="text-sm mt-2 text-center h-4 text-red-400"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" id="signup-button"
+                            class="btn-primary flex-1 py-3 rounded-lg font-bold">
+                        Sign Up
+                    </button>
+                    <button type="button" id="signin-button"
+                            class="btn-primary flex-1 py-3 rounded-lg font-bold">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+
+            <!-- Social Sign-In Buttons -->
+            <div class="mt-8 space-y-3">
+                <p class="text-gray-400 text-center text-sm">Or sign in with:</p>
+                <button type="button" id="google-signin-button"
+                        class="w-full flex items-center justify-center p-3 rounded-lg font-bold transition duration-200 bg-red-600 hover:bg-red-700 text-white shadow-lg">
+                    <!-- Google SVG Icon -->
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12.0003 4.80005C13.9788 4.80005 15.6025 5.48005 16.9038 6.7063C18.1751 7.8938 18.7751 9.4938 18.7751 11.2313C18.7751 11.3938 18.7668 11.5563 18.7418 11.7125H12.0003V14.3001H15.9378C15.8203 15.1501 15.3501 15.8203 14.7719 16.3313C14.0751 16.9251 13.1191 17.2001 12.0003 17.2001C9.64304 17.2001 7.7478 15.4251 7.7478 13.2001C7.7478 10.9751 9.64304 9.20005 12.0003 9.20005C13.2778 9.20005 14.3313 9.61255 15.1751 10.4251L17.0628 8.53755C15.6083 7.2188 13.9128 6.50005 12.0003 6.50005C9.84654 6.50005 7.9513 7.2438 6.5828 8.4438C5.2143 9.6438 4.60005 11.2376 4.60005 13.2001C4.60005 15.1626 5.2143 16.7563 6.5828 17.9563C7.9513 19.1563 9.84654 19.9001 12.0003 19.9001C13.9128 19.9001 15.6083 19.1813 17.0628 17.8626L18.9503 19.7501C17.0278 21.6501 14.7503 22.8001 12.0003 22.8001C7.29177 22.8001 3.55005 19.0583 3.55005 14.3501C3.55005 9.64177 7.29177 5.90005 12.0003 5.90005C14.2441 5.90005 16.273 6.6438 17.8719 8.16255L19.7503 6.27505C17.7003 4.27505 14.9253 2.90005 12.0003 2.90005C7.0378 2.90005 2.95005 6.98755 2.95005 12.0501C2.95005 17.1126 7.0378 21.2001 12.0003 21.2001C14.9253 21.2001 17.7003 19.8251 19.7503 17.8251L17.8719 15.9469C16.273 17.4657 14.2441 18.2001 12.0003 18.2001C9.0978 18.2001 6.6378 15.7401 6.6378 12.8376C6.6378 9.9351 9.0978 7.4751 12.0003 7.4751C13.8878 7.4751 15.5833 8.21885 16.9518 9.41885L18.8437 7.5313C17.2448 6.21255 15.5493 5.50005 12.0003 5.50005C9.84654 5.50005 7.9513 6.2438 6.5828 7.4438C5.2143 8.6438 4.60005 10.2376 4.60005 12.2001C4.60005 14.1626 5.2143 15.7563 6.5828 16.9563C7.9513 18.1563 9.84654 18.9001 12.0003 18.9001C14.7503 18.9001 17.0278 17.7501 18.7751 15.9469V11.7125C18.7751 11.5563 18.7668 11.3938 18.7418 11.2313C18.7418 9.4938 18.1418 7.8938 16.8706 6.7063C15.5693 5.48005 13.9456 4.80005 12.0003 4.80005C7.29177 4.80005 3.55005 8.54177 3.55005 13.2501C3.55005 17.9583 7.29177 21.7001 12.0003 21.7001C14.9253 21.7001 17.7003 20.3251 19.7503 18.3251L17.8719 16.4469C16.273 17.9657 14.2441 18.7001 12.0003 18.7001C9.0978 18.7001 6.6378 16.2401 6.6378 13.3376C6.6378 10.4351 9.0978 7.9751 12.0003 7.9751C13.8878 7.9751 15.5833 8.71885 16.9518 9.91885L18.8437 8.0313C17.2448 6.71255 15.5493 6.00005 12.0003 6.00005C9.84654 6.00005 7.9513 6.7438 6.5828 7.9438C5.2143 9.1438 4.60005 10.7376 4.60005 12.7001C4.60005 14.6626 5.2143 16.2563 6.5828 17.4563C7.9513 18.6563 9.84654 19.3001 12.0003 19.3001C14.7503 19.3001 17.0278 18.1501 18.7751 16.3469V12.2125C18.7751 12.0563 18.7668 11.8938 18.7418 11.7313C18.7418 9.9938 18.1418 8.3938 16.8706 7.2063C15.5693 5.98005 13.9456 5.30005 12.0003 5.30005Z" fill="white"></path></svg>
+                    Google
+                </button>
+                <button type="button" id="github-signin-button"
+                        class="w-full flex items-center justify-center p-3 rounded-lg font-bold transition duration-200 bg-gray-800 hover:bg-gray-900 text-white shadow-lg">
+                    <!-- GitHub SVG Icon -->
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.417 2.865 8.169 6.83 9.488.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.706-2.782.605-3.369-1.343-3.369-1.343-.455-1.157-1.11-1.468-1.11-1.468-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.83.091-.64.357-1.088.644-1.334-2.22-.251-4.555-1.116-4.555-4.943 0-1.088.39-1.979 1.029-2.678-.103-.252-.446-1.266.098-2.633 0 0 .84-.268 2.75 1.022A9.607 9.607 0 0112 6.863c.85.004 1.705.115 2.504.337 1.909-1.29 2.747-1.022 2.747-1.022.546 1.367.202 2.381.1 2.633.64.699 1.029 1.59 1.029 2.678 0 3.834-2.336 4.681-4.566 4.929.359.313.673.942.673 1.908 0 1.375-.012 2.484-.012 2.814 0 .267.18.577.688.484C19.043 20.161 22 16.417 22 12.017 22 6.484 17.522 2 12 2z" clip-rule="evenodd" /></svg>
+                    GitHub
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Imports and Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithCustomToken, 
+            signInAnonymously, 
+            onAuthStateChanged, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            // Social Auth Imports
+            GoogleAuthProvider, 
+            GithubAuthProvider,
+            signInWithPopup, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =========================================================================
+        // === OPTION A: MANUAL CONFIGURATION FOR LOCAL RUNNING (START) ============
+        //
+        // This configuration has been automatically updated with your provided keys.
+        // It will now be used if the environment configuration is unavailable.
+        //
+        const userProvidedConfig = {
+            apiKey: "AIzaSyCsR1Mo6mHvbODAeTmOieAoh7qdxqC5VQs",
+            authDomain: "sg-login-system.firebaseapp.com",
+            projectId: "sg-login-system",
+            storageBucket: "sg-login-system.firebasestorage.app",
+            messagingSenderId: "855123163546",
+            appId: "1:855123163546:web:4bf03d4ae0e7391c3e2223",
+            measurementId: "G-ZS1ZW688ZB"
+        };
+        // =========================================================================
+        // === OPTION A: MANUAL CONFIGURATION FOR LOCAL RUNNING (END) =============
+
+        // --- DOMAIN CHECK SECURITY GATE ---
+        const checkDomainSecurity = () => {
+            // List of allowed hostnames. This MUST include the Canvas domain and the user's target deployment domain.
+            const allowedHostnames = [
+                'gemini.google.com',
+                'superlative-games.onrender.com',
+                'localhost', 
+                '127.0.0.1',
+                '' // Empty string for file:// protocol (running directly from disk)
+            ];
+
+            const currentHostname = window.location.hostname;
+            const isFileProtocol = window.location.protocol === 'file:';
+
+            document.getElementById('current-hostname-display').textContent = isFileProtocol ? 'file://' : currentHostname;
+
+            // Check if the current hostname or protocol is in the allowed list
+            if (allowedHostnames.includes(currentHostname) || isFileProtocol) {
+                // Domain is allowed: show the app and hide the error
+                document.getElementById('security-error-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                console.log(`Security Check Passed: Running on ${isFileProtocol ? 'file://' : currentHostname}`);
+                return true;
+            } else {
+                // Domain is NOT allowed: show the error and hide the app
+                document.getElementById('security-error-container').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+                console.error(`Security Check Failed: Attempted to run on unauthorized domain: ${currentHostname}.`);
+                return false;
+            }
+        };
+
+
+        // Determine which configuration to use:
+        const envConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        
+        let selectedConfig = {};
+        
+        if (envConfig && envConfig.projectId && envConfig.apiKey) {
+            // Use environment config if it looks valid
+            selectedConfig = envConfig;
+        } else if (userProvidedConfig.projectId && userProvidedConfig.apiKey && userProvidedConfig.apiKey !== "YOUR_API_KEY_HERE") {
+            // Use user-provided config if it has been updated
+            selectedConfig = userProvidedConfig;
+            console.warn("Using manually provided Firebase Configuration for initialization.");
+        } else {
+            // Use empty config, which will trigger the initialization error
+            selectedConfig = {};
+            console.error("No valid Firebase configuration found (neither environment nor manual).");
+        }
+
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const firebaseConfig = selectedConfig; // Use the determined config
+
+        let app, db, auth;
+        let isFirebaseReady = false; // Flag to track initialization success
+        const DOMAIN_ERROR_CODE = 'auth/unauthorized-domain';
+
+        // --- FIREBASE INITIALIZATION & AUTH ---
+        const initializeFirebase = () => {
+             // Only proceed if the domain check passed
+            if (!checkDomainSecurity()) {
+                return; 
+            }
+
+            try {
+                // CRITICAL DEBUG: Check if the configuration object has the required fields
+                if (!firebaseConfig.projectId || !firebaseConfig.apiKey) {
+                    // Throw a custom error that is clearer than the Firebase one
+                    throw new Error("Missing essential Firebase configuration (projectId or apiKey). Authentication and database functions will not work.");
+                }
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseReady = true; // Set flag to true on success
+                console.log("Firebase services initialized successfully.");
+                
+                // Re-enable auth buttons if firebase is ready
+                document.querySelectorAll('#auth-form input, #auth-form button, #google-signin-button, #github-signin-button').forEach(el => {
+                    el.disabled = false;
+                    el.style.opacity = 1;
+                    el.style.cursor = 'pointer';
+                });
+                document.getElementById('auth-message').textContent = 'Please sign in or sign up to continue.';
+                document.getElementById('fatal-config-error').classList.add('hidden');
+
+
+                // Authentication state listener
+                onAuthStateChanged(auth, (user) => {
+                    const authStatusEl = document.getElementById('auth-status');
+                    const userIdEl = document.getElementById('user-id');
+                    const userStatusContainer = document.getElementById('user-status');
+                    
+                    if (user) {
+                        authStatusEl.textContent = 'Authenticated';
+                        authStatusEl.classList.remove('text-yellow-300', 'text-red-400');
+                        authStatusEl.classList.add('text-green-400');
+                        userIdEl.textContent = user.uid;
+                        userStatusContainer.classList.remove('hidden'); // Show when authenticated
+                        fetchUserData(user.uid);
+                    } else {
+                        authStatusEl.textContent = 'Unauthenticated';
+                        authStatusEl.classList.remove('text-green-400', 'text-yellow-300');
+                        authStatusEl.classList.add('text-red-400');
+                        userIdEl.textContent = 'N/A';
+                    }
+                });
+
+                // Handles initial authentication (custom token or anonymous)
+                const authenticate = async () => {
+                    if (!auth) return; // Defensive check
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                            console.log("Signed in with Custom Token.");
+                        } else {
+                            await signInAnonymously(auth);
+                            console.log("Signed in Anonymously.");
+                        }
+                    } catch (error) {
+                        console.error("Initial Authentication failed:", error.message);
+                        document.getElementById('auth-message').textContent = 'Initial Authentication Error. Check console.';
+                    }
+                };
+                authenticate();
+
+            } catch (error) {
+                // Displays the clearer error message if config is the issue
+                isFirebaseReady = false; // Ensure flag is false
+                console.error("Firebase initialization failed:", error);
+                document.getElementById('auth-status').textContent = 'Error';
+                
+                // Show the prominent error box on the login screen
+                const fatalErrorBox = document.getElementById('fatal-config-error');
+                
+                // Set the main error message visible in the auth-message box
+                const errorMessage = `Initialization Failed: ${error.message}`;
+                const messageEl = document.getElementById('auth-message');
+                if (messageEl) {
+                    messageEl.textContent = errorMessage;
+                    messageEl.classList.remove('text-green-400');
+                    messageEl.classList.add('text-red-400');
+                }
+
+                // Disable all authentication elements
+                document.querySelectorAll('#auth-form input, #auth-form button, #google-signin-button, #github-signin-button').forEach(el => {
+                    el.disabled = true;
+                    el.style.opacity = 0.5;
+                    el.style.cursor = 'not-allowed';
+                });
+                
+                // If the login container is visible, show the fatal config error
+                const loginContainer = document.getElementById('login-form-container');
+                if (loginContainer && loginContainer.classList.contains('scale-100')) {
+                    fatalErrorBox.classList.remove('hidden');
+                }
+            }
+        }
+
+
+        // --- FIRESTORE DATA HANDLING (Simplified) ---
+        const fetchUserData = (userId) => {
+            if (!db || !isFirebaseReady) return; // Guard against uninitialized db
+            
+            // Path: /artifacts/{appId}/users/{userId}/profile/data
+            const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'profile', 'data');
+            onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    console.log("User Profile Data (Realtime):", docSnap.data());
+                } else {
+                    console.log("No profile data found for this user. Initializing...");
+                    // Example: initialize basic profile data if none exists
+                    setDoc(userDocRef, { 
+                        joinDate: new Date().toISOString(), 
+                        lastLogin: new Date().toISOString(),
+                        gamesPlayed: 0 
+                    }, { merge: true }).catch(e => console.error("Error initializing profile:", e));
+                }
+            }, (error) => {
+                console.error("Error fetching user data:", error);
+            });
+        };
+
+        // --- VISUAL PUZZLE LOGIC ---
+        let correctEmojis = new Set();
+        let selectedEmojis = new Set();
+        let currentTargetCategory = "";
+        let currentTargetEmojis = []; 
+
+        const EMOJI_CATEGORIES = {
+            "Dairy products": ["🧀", "🥛", "🧈", "🍦", "🥣"], 
+            "Fruits": ["🍎", "🍌", "🍇", "🍓", "🍍"],
+            "Vegetables": ["🥦", "🥕", "🥔", "🧅", "🥬"],
+            "Meats": ["🥓", "🥩", "🍗", "🍖", "🍣"],
+            "Sweets": ["🍰", "🍩", "🍪", "🍬", "🍫"]
+        };
+        const ALL_EMOJIS_FLAT = [].concat(...Object.values(EMOJI_CATEGORIES));
+        
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        const generatePuzzle = () => {
+            const gridEl = document.getElementById('emoji-grid');
+            gridEl.innerHTML = '';
+            correctEmojis.clear();
+            selectedEmojis.clear();
+
+            const categoryNames = Object.keys(EMOJI_CATEGORIES);
+            const randomCategoryName = categoryNames[Math.floor(Math.random() * categoryNames.length)];
+            currentTargetCategory = randomCategoryName;
+            currentTargetEmojis = EMOJI_CATEGORIES[randomCategoryName];
+
+            document.getElementById('puzzle-question').textContent = `Select all images showing ${currentTargetCategory}.`;
+
+            let gridEmojis = [];
+            const correctCount = 4;
+
+            for (let i = 0; i < correctCount; i++) {
+                const emoji = currentTargetEmojis[i % currentTargetEmojis.length];
+                gridEmojis.push({ emoji: emoji, isCorrect: true });
+            }
+
+            while (gridEmojis.length < 9) {
+                const randomDecoy = ALL_EMOJIS_FLAT[Math.floor(Math.random() * ALL_EMOJIS_FLAT.length)];
+                
+                if (!currentTargetEmojis.includes(randomDecoy)) {
+                     gridEmojis.push({ emoji: randomDecoy, isCorrect: false });
+                }
+            }
+
+            shuffleArray(gridEmojis);
+
+            gridEmojis.forEach(item => {
+                if (item.isCorrect) {
+                    correctEmojis.add(item.emoji);
+                }
+            });
+
+            gridEmojis.forEach((item, index) => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'puzzle-item';
+                button.textContent = item.emoji;
+                button.setAttribute('data-index', index);
+                button.setAttribute('data-emoji', item.emoji);
+                button.setAttribute('data-correct-flag', item.isCorrect);
+                button.addEventListener('click', handleEmojiClick);
+                gridEl.appendChild(button);
+            });
+
+            document.getElementById('access-button').disabled = true;
+            document.getElementById('puzzle-message').textContent = '';
+        };
+
+        const handleEmojiClick = (event) => {
+            const item = event.currentTarget;
+            const emoji = item.getAttribute('data-emoji');
+
+            if (item.classList.contains('selected')) {
+                item.classList.remove('selected');
+                selectedEmojis.delete(emoji);
+            } else {
+                item.classList.add('selected');
+                selectedEmojis.add(emoji);
+            }
+            validatePuzzle();
+        };
+
+        const validatePuzzle = () => {
+            const allItems = document.querySelectorAll('.puzzle-item');
+            const messageEl = document.getElementById('puzzle-message');
+            const accessButton = document.getElementById('access-button');
+
+            let allRequiredSelected = true;
+            let incorrectSelected = false;
+            let actualCorrectCountInGrid = 0;
+
+            allItems.forEach(item => {
+                const isCorrectTile = item.getAttribute('data-correct-flag') === 'true';
+                const isSelected = item.classList.contains('selected');
+
+                if (isCorrectTile) {
+                    actualCorrectCountInGrid++;
+                    if (!isSelected) {
+                        allRequiredSelected = false;
+                    }
+                } else {
+                    if (isSelected) {
+                        incorrectSelected = true;
+                    }
+                }
+            });
+            
+            // Total items selected that are actually correct in the currently selected category.
+            const totalSelectedCorrectly = Array.from(selectedEmojis).filter(emoji => currentTargetEmojis.includes(emoji)).length;
+
+            const isSolved = !incorrectSelected && allRequiredSelected && (totalSelectedCorrectly === actualCorrectCountInGrid);
+
+
+            if (isSolved) {
+                messageEl.textContent = 'Success! Click to proceed.';
+                messageEl.classList.remove('text-red-400', 'text-gray-400');
+                messageEl.classList.add('text-green-400');
+                accessButton.disabled = false;
+            } else {
+                messageEl.textContent = 'Please select all items in the category.';
+                messageEl.classList.remove('text-green-400');
+                messageEl.classList.add('text-red-400');
+                accessButton.disabled = true;
+            }
+        };
+
+
+        const handlePuzzleSubmit = (event) => {
+            event.preventDefault();
+            
+            if (document.getElementById('access-button').disabled === false) {
+                const puzzleGate = document.getElementById('puzzle-gate');
+                const loginContainer = document.getElementById('login-form-container');
+                const userStatusContainer = document.getElementById('user-status');
+
+                puzzleGate.classList.add('scale-0', 'opacity-0');
+                puzzleGate.classList.remove('scale-100', 'opacity-100');
+
+                setTimeout(() => {
+                    puzzleGate.style.display = 'none';
+                    loginContainer.style.display = 'block';
+                    userStatusContainer.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        loginContainer.classList.remove('scale-0', 'opacity-0');
+                        loginContainer.classList.add('scale-100', 'opacity-100');
+                        loginContainer.classList.remove('absolute', 'top-1/2', 'left-1/2', '-translate-x-1/2', '-translate-y-1/2');
+                        loginContainer.classList.add('relative', 'mx-auto', 'my-20');
+                        
+                        // If Firebase initialization failed earlier, show the error box now that the container is visible
+                        if (!isFirebaseReady) {
+                             document.getElementById('fatal-config-error').classList.remove('hidden');
+                        }
+
+                    }, 50);
+
+                }, 500);
+            }
+        };
+
+
+        // --- FIREBASE AUTH HANDLERS ---
+        const getCredentials = () => {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+
+            // Simple client-side email validation regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email)) {
+                displayAuthMessage('Error: Please enter a valid email address (e.g., user@example.com).', true);
+                return null; // Stop if validation fails
+            }
+
+            if (password.length < 6) {
+                displayAuthMessage('Error: Password must be at least 6 characters long.', true);
+                return null; // Stop if password is too short
+            }
+
+            return { email, password };
+        };
+
+        const displayAuthMessage = (message, isError = false) => {
+            const messageEl = document.getElementById('auth-message');
+            messageEl.innerHTML = message; // Use innerHTML to allow for <code> tags
+            messageEl.classList.remove('text-green-400', 'text-red-400');
+            messageEl.classList.add(isError ? 'text-red-400' : 'text-green-400');
+        };
+
+        const hideDomainError = () => {
+             document.getElementById('auth-domain-error').classList.add('hidden');
+        }
+        
+        const handleSignUp = async () => {
+            // Defensive check for auth initialization
+            if (!auth || !isFirebaseReady) {
+                displayAuthMessage('Fatal Error: Firebase service is not ready. Check configuration.', true);
+                return;
+            }
+            hideDomainError();
+            const credentials = getCredentials();
+            if (!credentials) return; // Stop if validation failed
+
+            const { email, password } = credentials;
+            displayAuthMessage('Signing up...');
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log("User signed up:", userCredential.user);
+                displayAuthMessage('Sign-up successful! Welcome!', false);
+            } catch (error) {
+                console.error("Sign-up error:", error.message);
+                displayAuthMessage(error.message, true);
+            }
+        };
+
+        const handleSignIn = async () => {
+            // Defensive check for auth initialization
+            if (!auth || !isFirebaseReady) {
+                displayAuthMessage('Fatal Error: Firebase service is not ready. Check configuration.', true);
+                return;
+            }
+            hideDomainError();
+            const credentials = getCredentials();
+            if (!credentials) return; // Stop if validation failed
+
+            const { email, password } = credentials;
+            displayAuthMessage('Signing in...');
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log("User signed in:", userCredential.user);
+                displayAuthMessage('Sign-in successful! Welcome back!', false);
+            } catch (error) {
+                console.error("Sign-in error:", error.message);
+                displayAuthMessage(error.message, true);
+            }
+        };
+
+        // --- SOCIAL SIGN-IN HANDLERS ---
+        const handleSocialSignIn = async (providerInstance, providerName) => {
+            // Defensive check for auth initialization
+            if (!auth || !isFirebaseReady) {
+                displayAuthMessage('Fatal Error: Firebase service is not ready. Check configuration.', true);
+                return;
+            }
+            
+            hideDomainError();
+            displayAuthMessage(`Signing in with ${providerName}...`);
+            try {
+                // Use a pop-up window for external authentication
+                const result = await signInWithPopup(auth, providerInstance);
+                console.log(`${providerName} Sign-in successful:`, result.user);
+                displayAuthMessage(`Sign-in with ${providerName} successful!`, false);
+            } catch (error) {
+                console.error(`${providerName} Sign-in error:`, error);
+                
+                if (error.code === DOMAIN_ERROR_CODE) {
+                    // Show the prominent domain error box and a short message
+                    document.getElementById('auth-domain-error').classList.remove('hidden');
+                    displayAuthMessage('Social Sign-in Failed. See warning above. This is a configuration error on the Firebase side.', true);
+                    
+                    // Explicitly log the required fix
+                    console.error("FIREBASE CONFIGURATION ERROR: The domain 'gemini.google.com' must be added to the Authorized Domains list in your Firebase Console (Authentication > Settings).");
+                    
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    displayAuthMessage('Sign-in cancelled. Pop-up window was closed.', true);
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    displayAuthMessage('A sign-in request is already pending.', true);
+                } else {
+                    // Display the general error message
+                    displayAuthMessage(`Error signing in with ${providerName}: ${error.message}`, true);
+                }
+            }
+        };
+
+        const handleGoogleSignIn = () => {
+            const provider = new GoogleAuthProvider();
+            handleSocialSignIn(provider, 'Google');
+        };
+
+        const handleGithubSignIn = () => {
+            const provider = new GithubAuthProvider();
+            handleSocialSignIn(provider, 'GitHub');
+        };
+
+
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Run Security Check and initialize Firebase if approved
+            initializeFirebase(); 
+            
+            // 2. Setup Puzzle
+            generatePuzzle();
+            document.getElementById('puzzle-form').addEventListener('submit', handlePuzzleSubmit);
+            
+            // 3. Setup Auth Buttons
+            document.getElementById('signup-button').addEventListener('click', handleSignUp);
+            document.getElementById('signin-button').addEventListener('click', handleSignIn);
+            
+            // 4. Setup Social Auth Buttons
+            document.getElementById('google-signin-button').addEventListener('click', handleGoogleSignIn);
+            document.getElementById('github-signin-button').addEventListener('click', handleGithubSignIn);
+        });
+
+    </script>
+</body>
+</html>
